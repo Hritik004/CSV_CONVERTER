@@ -1,4 +1,5 @@
 import sqlite3
+from werkzeug.security import generate_password_hash
 
 # Connect to SQLite3 database (creates the file if it doesn't exist)
 conn = sqlite3.connect('users.db')
@@ -16,9 +17,12 @@ CREATE TABLE IF NOT EXISTS users (
 ''')
 
 # Insert a sample user (for testing purposes)
-cursor.execute('''
-INSERT INTO users (email, password) VALUES (?, ?)
-''', ('test@example.com', 'password123'))
+try:
+    cursor.execute('''
+    INSERT INTO users (email, password) VALUES (?, ?)
+    ''', ('test@example.com', generate_password_hash('password123')))
+except sqlite3.IntegrityError:
+    pass
 
 # Commit changes and close the connection
 conn.commit()
